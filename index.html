@@ -41,6 +41,15 @@
       padding: 8px 12px;
       cursor: pointer;
     }
+
+    #soil-status {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -61,6 +70,8 @@
       <option>Низкий</option>
     </select>
 
+    <div id="soil-status">Загрузка данных о почве...</div>
+
     <button onclick="saveData()">Сохранить</button>
     <button onclick="closeEditor()">Закрыть</button>
   </div>
@@ -74,10 +85,11 @@
     }).addTo(map);
 
     const marker = L.marker([51.0, 71.0]).addTo(map);
-    marker.bindTooltip("Точка агронома").openTooltip();
+    marker.bindTooltip("Влад казявка нажми на точку").openTooltip();
 
     marker.on('click', () => {
       document.getElementById('editor').style.display = 'flex';
+      loadSoilStatus();
     });
 
     function closeEditor() {
@@ -91,6 +103,21 @@
 
       alert(`Сохранено:\nКультура: ${crop}\nРекомендации: ${recommendation}\nПриоритет: ${priority}`);
       closeEditor();
+    }
+
+    function loadSoilStatus() {
+      const statusElement = document.getElementById('soil-status');
+      // Имитируем запрос к серверу — замени URL на свой API
+      statusElement.textContent = 'Загрузка данных о почве...';
+      fetch('https://example.com/api/soil-status')
+        .then(res => res.json())
+        .then(data => {
+          // Пример структуры ответа: { humus: 4.5, nitrogen: 9.8, pH: 7.2 }
+          statusElement.textContent = `Гумус: ${data.humus}%\nАзот: ${data.nitrogen} мг/кг\npH: ${data.pH}`;
+        })
+        .catch(() => {
+          statusElement.textContent = 'Не удалось загрузить данные о почве';
+        });
     }
   </script>
 </body>
